@@ -1,0 +1,14 @@
+/* The site's own styles come from its src/styles.css, scoped to
+   `.site` at build time (see scope-site-css.ts). This file only adds what the
+   prototype canvas needs on top. */
+
+.site {
+  container: site / inline-size;
+  min-height: 100%;
+}
+
+/* Icon size set from Visual Design */
+.site [style*='--icon-size'] svg {
+  width: var(--icon-size);
+  height: var(--icon-size);
+}

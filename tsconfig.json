@@ -13,5 +13,5 @@
     "resolveJsonModule": true,
     "noEmit": true
   },
-  "include": ["src", "vite.config.ts", "scope-site-css.ts"]
+  "include": ["src", "vite.config.ts"]
 }
