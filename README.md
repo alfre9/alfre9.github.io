@@ -1,30 +1,88 @@
-# Bolt · Visual Design prototype
+# Alfred Chang · personal site
 
-A clickable prototype of the bolt.new workspace with a new **Visual Design** mode for direct, Figma-style editing of a live site: Alfred Chang's personal site in [`personal-site/`](personal-site/). Chat and AI are simulated; there is no backend.
+React + TypeScript + Vite. Static. No backend, database, auth, or API calls.
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173
+npm run dev       # http://localhost:5174
+npm run build     # type-check + production build → dist/
+npm run preview   # serve dist/ at http://localhost:4174
 ```
 
-- **Visual Design** (cursor + spark icon, left of Preview, or press `D`): click to select, double-click to edit text, use the floating toolbar, Inspector (right), and Layers (left). Selecting a stat tile, a "More about this role" panel, a problem-lens question, or "Explore the thinking" opens it so you can edit what's inside.
-- **AI box in the toolbar**: wired for buttons. Any prompt animates the button; keywords like "pill", "sky blue", "orange", "secondary", "no shadow", "bigger" adjust the result.
-- **Live sync**: every edit saves to localStorage automatically. Opening **Code** plays the "visual edits → code" animation and highlights the changed JSX lines.
-- **Reset**: gear icon → "Reset prototype to original".
+The Bolt Visual Design prototype lives in [`prototype/`](prototype/) and shares this folder's `node_modules`: `npm run dev:prototype` (http://localhost:5173). See [`prototype/README.md`](prototype/README.md).
 
-## How the site gets into the canvas
+## Editing content
 
-It's a look-and-feel copy of the real site, not the site itself:
+Everything the site says lives in **`src/content.ts`**: identity, links, hero, career history, the problem lens, work stories, the reach figure, interests, contact copy, and the Bolt.new page. The PRD lives in **`src/prd.ts`**. Components only render it.
 
-- **Copy** comes straight from `personal-site/src/content.ts`, and the photo from `personal-site/public/alfred-chang.jpg`. Edit those and the prototype follows.
-- **Styles** come straight from `personal-site/src/styles.css`. [`scope-site-css.ts`](scope-site-css.ts) (a PostCSS plugin in `vite.config.ts`) scopes it to `.site` at build time and turns its breakpoints into container queries, so it doesn't clash with the Bolt shell and the Desktop / Tablet / Mobile toggle drives the layout.
-- **Markup** lives in [`src/site/sections/`](src/site/sections/), one file per real component, with the same elements and class names wrapped in `<E>` so each one can be selected. A markup change in `personal-site/src/components/` has to be mirrored here by hand.
-- **Not included:** the `#bolt` page, the mobile menu panel, and the nav's active-section underline.
+- Optional links (`linkedinUrl`, `resumeUrl`, `prototypeUrl`, project URLs) are `null`-able. A `null` link is **left off the page**, never rendered as a dead `#`.
+- `reach.approvedForPublic = false` hides the 40M figure and keeps only the one-billion ambition.
+- `hero.photo` points to `/public/alfred-chang.jpg`, a 640×800 head-and-shoulders crop of `profile picture.jpeg`. Replace that file to change the photo.
+- `work.featured.screenshot` swaps the built-in illustration for an image in `/public`.
+- See **`CONTENT_NOTES.md`** for which lines are résumé-backed, self-reported, draft, or hypothesis, and what still needs approval.
 
-## Updating the copy on the personal site
+## The Bolt.new page (`/#bolt`)
 
-The personal site links to a bundled copy at `personal-site/public/prototype/`. Rebuild it after changing the prototype:
+A separate view for the Bolt.new team, linked only from the footer ("For the Bolt.new team"). It isn't part of the main scroll, and you can send the link directly: `https://<your-domain>/#bolt`. Copy lives in `forBolt` in `content.ts`.
+
+The page is built to walk through in an interview: the hero, then three "slides" (**01 The problem**, **02 The proposal**, **03 Building on Bolt**), then the first 90 days and contact. Each slide has its own deep link: `#bolt-problem`, `#bolt-proposal`, `#bolt-prototype`.
+
+## The PRD page (`/#bolt-prd`)
+
+The full Visual Design PRD, with a sticky contents list. Copy lives in **`src/prd.ts`**. It's linked from the Bolt page ("Read the full PRD" next to "Open the prototype", plus a link under the proposal) and from the main site's prototype case study ("Read the PRD"). Every PRD section has a deep link such as `#prd-requirements` or `#prd-risks`. Tables turn into one card per row below 700px.
+
+### How the hash routing works
+
+- `#bolt-prd` and any `#prd-…` anchor show the PRD.
+- `#bolt` and any `#bolt-…` anchor show the Bolt page.
+- Any other anchor, such as a nav link, "Back to the main site", or "Read the case study", switches back to the main site and scrolls to that section.
+- The `#main` skip link keeps the current view.
+
+## The Bolt prototype link
+
+`prototypeUrl` defaults to `/prototype/index.html`, a copy of the Visual Design prototype ([`prototype/`](prototype/)) built into `public/prototype/`:
 
 ```bash
-cd personal-site && npm run bundle-prototype
+npm run bundle-prototype   # builds prototype/ into public/prototype with base /prototype/
 ```
+
+Re-run it whenever the prototype changes. To host the prototype elsewhere instead, set `site.prototypeUrl` to that URL and delete `public/prototype/`.
+
+## Deploying
+
+`dist/` is a plain static site and works on Vercel, Netlify, Cloudflare Pages, or GitHub Pages. On Vercel or Netlify, the defaults work from the repo root: build command `npm run build`, output directory `dist`.
+
+## Structure
+
+```
+prototype/              the Bolt Visual Design prototype (its own Vite app; see prototype/README.md)
+public/prototype/       built copy of the prototype, served at /prototype/
+src/
+  content.ts            all copy, dates, links, flags
+  prd.ts                the Visual Design PRD (/#bolt-prd) + its table of contents
+  styles.css            design tokens + all styles (neo-brutalist)
+  App.tsx               section order + main / #bolt / #bolt-prd view switch
+  components/
+    Header.tsx          sticky nav, LinkedIn, mobile menu, active-section highlight
+    Hero.tsx            hello, photo (/public/alfred-chang.jpg), and intro
+    Journey.tsx         date chart with role titles + timeline (perspective, accomplishments)
+    HowIThink.tsx       problem lens (interactive) + SVG diagram
+    Work.tsx            case studies, builder card, featured prototype
+    Reach.tsx           40M / 1B proportional figure
+    Beyond.tsx          badminton / strategy board / pickleball SVGs
+    Contact.tsx         contact + footer (footer links to #bolt)
+    ForBolt.tsx         Bolt.new page: stats, problem, proposal, prototype, first 90 days
+    Prd.tsx             PRD page: contents list, problem cards, tables that stack on phones
+    ui.tsx              section heading helpers
+```
+
+## Accessibility notes
+
+- Semantic landmarks, a skip link, one `h1`, and section headings in order.
+- Visible 4px focus ring on every interactive element; keyboard order follows the page.
+- The problem lens uses `aria-expanded` buttons. All four questions and their one-line summaries are always visible, and selecting one opens the longer explanation.
+- Journey details use native `<details>`. Role, dates, perspective, and main accomplishment are visible without opening them.
+- Switching to the Bolt page or the PRD moves focus to its heading and updates the document title.
+- PRD tables have a screen-reader caption and row headers. On phones the column headers are visually hidden and repeated as a label on each cell.
+- `prefers-reduced-motion` disables smooth scrolling and all transitions/animations; the illustrations then change state instantly.
+- No horizontal scrolling from 320px up.

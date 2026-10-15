@@ -1,12 +1,14 @@
 {
-  "name": "bolt-visual-design-prototype",
+  "name": "alfred-chang-site",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:prototype": "vite prototype",
+    "bundle-prototype": "tsc -p prototype && vite build prototype --base=/prototype/ --outDir ../public/prototype --emptyOutDir"
   },
   "dependencies": {
     "lucide-react": "^0.453.0",
