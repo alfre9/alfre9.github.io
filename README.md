@@ -50,7 +50,9 @@ Re-run it whenever the prototype changes. To host the prototype elsewhere instea
 
 ## Deploying
 
-`dist/` is a plain static site and works on Vercel, Netlify, Cloudflare Pages, or GitHub Pages. On Vercel or Netlify, the defaults work from the repo root: build command `npm run build`, output directory `dist`.
+Every push to `main` builds the site and publishes it to GitHub Pages at **https://alfre9.github.io** ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)). One-time setup: the repo must be named `alfre9.github.io`, and Settings → Pages → Source must be "GitHub Actions". Hash routes (`/#bolt`, `/#bolt-prd`) need no server config.
+
+`dist/` is a plain static site, so it also works on Vercel, Netlify, or Cloudflare Pages. On Vercel or Netlify, the defaults work from the repo root: build command `npm run build`, output directory `dist`.
 
 ## Structure
 

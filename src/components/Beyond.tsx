@@ -209,7 +209,6 @@ export function Beyond() {
             <div className="beyond__text">
               <h3 className="beyond__title">{tft.title}</h3>
               <p className="beyond__line">{tft.line}</p>
-              <p className="beyond__note mono">{tft.note}</p>
               {tftChips.length > 0 && (
                 <ul className="chips chips--small">
                   {tftChips.map((c) => (
