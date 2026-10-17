@@ -11,7 +11,7 @@ npm run dev:prototype   # http://localhost:5173
 
 - **Visual Design** (cursor + spark icon, left of Preview, or press `D`): click to select, double-click to edit text, use the floating toolbar, Inspector (right), and Layers (left). Selecting a stat tile, a "More about this role" panel, a problem-lens question, or "Explore the thinking" opens it so you can edit what's inside.
 - **AI box in the toolbar**: wired for buttons. Any prompt animates the button; keywords like "pill", "sky blue", "orange", "secondary", "no shadow", "bigger" adjust the result.
-- **Live sync**: every edit saves to localStorage automatically. Opening **Code** plays the "visual edits → code" animation and highlights the changed JSX lines.
+- **Apply on exit** (phase 1 in the PRD's Prioritization section): Visual Design is a strict mode. Edits there are a draft, counted in the strip as "N changes · not in code yet". Leaving it (**Apply**, `D`, or any other tab) plays a simulated AI pass that applies them all at once, then adds a chat reply and a version. Opening **Code** never syncs: it shows what's already applied and highlights the changed JSX lines. Drafts survive a reload (localStorage) and reopen Visual Design.
 - **Reset**: gear icon → "Reset prototype to original".
 
 ## How the site gets into the canvas

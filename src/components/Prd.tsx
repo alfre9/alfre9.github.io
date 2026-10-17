@@ -1,11 +1,11 @@
 import { ArrowLeft, ArrowUpRight, Check, FileText, Sparkles, X } from 'lucide-react';
 import { Fragment, type ReactNode } from 'react';
 import { forBolt, site } from '../content';
-import { prd, prdSections } from '../prd';
+import { phaseIds, prd, prdSections } from '../prd';
 import { useActiveSection } from './Header';
 
 /** Renders `code` and **bold** inside PRD strings. */
-function Rich({ text }: { text: string }) {
+export function Rich({ text }: { text: string }) {
   return (
     <>
       {text.split(/(`[^`]+`|\*\*[^*]+\*\*)/).map((part, i) =>
@@ -76,6 +76,30 @@ function Table({ caption, cols, rowHeader, rows }: { caption: string; cols: Col[
   );
 }
 
+/** Where tokens are spent, today and in each phase. Used in the PRD and on the Bolt page's slide 03. */
+export function TokensTable() {
+  return (
+    <div className="tokens">
+      <Table
+        caption="Where tokens are spent today, in phase 1, and in phase 2"
+        rowHeader="action"
+        cols={[
+          { key: 'action', label: 'What the user does' },
+          { key: 'today', label: 'Today' },
+          { key: 'phase1', label: 'Phase 1' },
+          { key: 'phase2', label: 'Phase 2' },
+        ]}
+        rows={prd.priority.tokens.map((r) => ({
+          action: r.action,
+          today: r.today,
+          phase1: r.phase1,
+          phase2: <Rich text={r.phase2} />,
+        }))}
+      />
+    </div>
+  );
+}
+
 const MARKS = { check: Check, x: X, ai: Sparkles };
 
 function Checks({ items, mark = 'check' }: { items: string[]; mark?: keyof typeof MARKS }) {
@@ -126,7 +150,7 @@ function PrototypeButton() {
 }
 
 export function Prd() {
-  const { metrics, audience, scope, technical: t, validation: v } = prd;
+  const { metrics, audience, scope, technical: t, priority: pr, validation: v } = prd;
   return (
     <>
       <section id={prd.hash} className="prd-hero grid-paper" aria-labelledby="prd-title">
@@ -283,19 +307,22 @@ export function Prd() {
             </Part>
 
             <Part id="prd-requirements">
+              <p>{prd.requirementsNote}</p>
               <Table
-                caption="Requirements, with priority and acceptance criteria"
+                caption="Requirements, with priority, phase, and acceptance criteria"
                 rowHeader="title"
                 cols={[
                   { key: 'id', label: 'ID' },
                   { key: 'title', label: 'Requirement' },
                   { key: 'priority', label: 'Priority' },
+                  { key: 'phase', label: 'Phase' },
                   { key: 'criteria', label: 'Acceptance criteria' },
                 ]}
                 rows={prd.requirements.map((r) => ({
                   id: <span className="mono prd-id">{r.id}</span>,
                   title: r.title,
                   priority: <span className={`prd-priority prd-priority--${r.priority.toLowerCase()} mono`}>{r.priority}</span>,
+                  phase: <span className={`prd-priority prd-phase--${r.phase} mono`}>{r.phase}</span>,
                   criteria: r.criteria,
                 }))}
               />
@@ -355,6 +382,69 @@ export function Prd() {
                 ]}
                 rows={t.compare}
               />
+            </Part>
+
+            <Part id="prd-priority">
+              {pr.intro.map((p) => (
+                <p key={p}>{p}</p>
+              ))}
+              <div className="options">
+                {pr.options.map((o) => (
+                  <div key={o.title} className="option">
+                    <div className={`option__head ${o.recommended ? 'surface-lime' : 'surface-paper'}`}>
+                      <p className="option__tag mono">{o.tag}</p>
+                      <h3 className="option__title">{o.title}</h3>
+                    </div>
+                    <div className="option__body">
+                      <p className="option__text">{o.text}</p>
+                      <dl className="option__points">
+                        {o.points.map((pt) => (
+                          <div key={pt.label}>
+                            <dt className="mono">{pt.label}</dt>
+                            <dd>{pt.text}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <h3 className="prd-h3">{pr.phasesLabel}</h3>
+              <ol className="phases">
+                {pr.phases.map((ph) => (
+                  <li key={ph.name} className="lane">
+                    <div className={`lane__head surface-${ph.phase === 1 ? 'sky' : 'lime'}`}>
+                      <h4 className="lane__when">{ph.name}</h4>
+                      <span className="lane__tag mono">{ph.when}</span>
+                    </div>
+                    <ol className="lane__steps">
+                      {ph.steps.map((s) => (
+                        <li key={s}>{s}</li>
+                      ))}
+                    </ol>
+                    <dl className="lane__meta">
+                      <div>
+                        <dt className="mono">Tokens</dt>
+                        <dd>{ph.tokens}</dd>
+                      </div>
+                      <div>
+                        <dt className="mono">Requirements</dt>
+                        <dd>{phaseIds(ph.phase)}</dd>
+                      </div>
+                    </dl>
+                  </li>
+                ))}
+              </ol>
+              <h3 className="prd-h3">{pr.tokensLabel}</h3>
+              <TokensTable />
+              <p className="prd-aside">{pr.tokensNote}</p>
+              <p className="prd-aside">
+                <Rich text={pr.phaseNote} />
+              </p>
+              <p className="prd-aside prd-aside--mind">
+                <Rich text={pr.changeMind} />
+              </p>
             </Part>
 
             <Part id="prd-risks">

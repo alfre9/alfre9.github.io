@@ -96,14 +96,14 @@ export function TransformModal({ changes, onDone }: { changes: ChangeItem[]; onD
   const progress = Math.min(1, t / T_DONE);
 
   const steps = [
-    { label: `Collecting ${n} visual ${n === 1 ? 'edit' : 'edits'}`, at: 0, end: T_MAP },
+    { label: `Collecting ${n} design ${n === 1 ? 'change' : 'changes'}`, at: 0, end: T_MAP },
     { label: `Mapping to ${files.length} ${files.length === 1 ? 'component' : 'components'}`, at: T_MAP, end: T_WRITE },
-    { label: 'Writing JSX & styles', at: T_WRITE, end: T_FORMAT },
-    { label: 'Formatting & hot reload', at: T_FORMAT, end: T_DONE },
+    { label: 'AI writing JSX & styles', at: T_WRITE, end: T_FORMAT },
+    { label: 'Checking the build', at: T_FORMAT, end: T_DONE },
   ];
 
   return (
-    <div className="xf" role="dialog" aria-modal="true" aria-label="Converting visual edits to code">
+    <div className="xf" role="dialog" aria-modal="true" aria-label="Applying design changes with AI">
       <div className="xf__backdrop" />
       <div className={`xf__card ${t >= T_DONE ? 'is-done' : ''}`}>
         <div className="xf__glow" />
@@ -112,8 +112,8 @@ export function TransformModal({ changes, onDone }: { changes: ChangeItem[]; onD
             <Zap size={18} fill="currentColor" />
           </span>
           <div>
-            <h3>{t >= T_DONE ? 'Your code is in sync' : 'Turning visual edits into code'}</h3>
-            <p>Live edits from Visual Design are being written back to your React components.</p>
+            <h3>{t >= T_DONE ? 'Saved to code' : 'Applying your design with AI'}</h3>
+            <p>You left Visual Design, so Bolt’s AI is writing every change to your React components in one pass. Uses tokens.</p>
           </div>
           <button className="xf__skip" onClick={onDone}>
             Skip
@@ -122,7 +122,7 @@ export function TransformModal({ changes, onDone }: { changes: ChangeItem[]; onD
 
         <div className="xf__body">
           <div className="xf__edits">
-            <div className="xf__col-title">Visual edits</div>
+            <div className="xf__col-title">Design changes</div>
             {changes.slice(0, 7).map((c, i) => {
               const shown = t > i * 90 * speed;
               const mapped = t > T_MAP + i * 60 * speed;
@@ -157,7 +157,7 @@ export function TransformModal({ changes, onDone }: { changes: ChangeItem[]; onD
                 </div>
               );
             })}
-            {n > 7 && <div className="xf__more">+{n - 7} more edits</div>}
+            {n > 7 && <div className="xf__more">+{n - 7} more changes</div>}
           </div>
 
           <div className="xf__beam" data-active={t > T_MAP && t < T_FORMAT}>

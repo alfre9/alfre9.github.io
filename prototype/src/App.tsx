@@ -41,55 +41,56 @@ function Shell() {
   const chat = useChat();
   const toast = useToast();
   const [leftOpen, setLeftOpen] = useState(true);
-  const [transform, setTransform] = useState<ChangeItem[] | null>(null);
+  const [applying, setApplying] = useState<{ changes: ChangeItem[]; next: Mode } | null>(null);
   const [sync, setSync] = useState<SyncInfo | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [badge, setBadge] = useState(true);
-  const sessionStart = useRef<Doc | null>(null);
   const pending = useMemo(() => diffIds(compiled, doc).length, [compiled, doc]);
-  const sessionEdits = sessionStart.current ? diffIds(sessionStart.current, doc).length : 0;
 
-  const leaveDesign = useCallback(() => {
-    const start = sessionStart.current;
-    sessionStart.current = null;
-    if (!start) return;
-    const n = diffIds(start, doc).length;
-    if (n > 0) {
-      const versions = chat.messages.filter((m) => m.role === 'version').length;
-      chat.add({
-        role: 'version',
-        title: `Visual Design edits · ${n} ${n === 1 ? 'element' : 'elements'}`,
-        subtitle: `Version ${versions + 2} at ${versionStamp()}`,
-        current: true,
-      });
-    }
-  }, [chat, doc]);
+  // Phase 1 of the PRD's prioritization: Visual Design is a strict mode. Edits there are a draft
+  // until you leave it, then AI applies them all in one pass. A draft left from an earlier visit
+  // reopens Visual Design, so Preview never shows edits that aren't in code.
+  useEffect(() => {
+    if (pending > 0) setMode('design');
+  }, []);
 
   const requestMode = useCallback(
     (m: Mode) => {
-      if (m === mode) return;
-      if (mode === 'design') leaveDesign();
-      if (m === 'design') sessionStart.current = doc;
-      if (m === 'code') {
+      if (m === mode || applying) return;
+      if (mode === 'design' && pending > 0) {
         const changes = computeChanges(compiled, doc, getEl);
         if (changes.length) {
-          setTransform(changes);
+          setApplying({ changes, next: m });
           return;
         }
+        api.markCompiled();
       }
       setMode(m);
     },
-    [mode, leaveDesign, doc, compiled, getEl, setMode],
+    [mode, applying, pending, compiled, doc, getEl, api, setMode],
   );
 
-  const transformRef = useRef(transform);
-  transformRef.current = transform;
-  const finishTransform = useCallback(() => {
-    const changes = transformRef.current;
-    if (changes) setSync({ ids: changes.map((c) => c.id), at: Date.now(), focusFile: changes[0]?.file });
-    setTransform(null);
+  // Read through a ref so the modal's onDone stays stable while it animates.
+  const latest = useRef({ applying, chat, toast });
+  latest.current = { applying, chat, toast };
+  const finishApply = useCallback(() => {
+    const { applying: a, chat, toast } = latest.current;
+    if (!a) return;
+    const n = a.changes.length;
+    const label = `${n} design ${n === 1 ? 'change' : 'changes'}`;
+    const versions = chat.messages.filter((m) => m.role === 'version').length;
+    chat.add({
+      role: 'assistant',
+      badge: 'Visual Design',
+      text: `Applied ${label} to your code in one pass.`,
+      actions: [...new Set(a.changes.map((c) => `Edited ${c.file}`)), 'Ran npm run build'],
+    });
+    chat.add({ role: 'version', title: `Visual Design · ${label}`, subtitle: `Version ${versions + 2} at ${versionStamp()}`, current: true });
+    setSync({ ids: a.changes.map((c) => c.id), at: Date.now(), focusFile: a.changes[0]?.file });
     api.markCompiled();
-    setMode('code');
+    setApplying(null);
+    setMode(a.next);
+    toast('Saved to code');
   }, [api, setMode]);
 
   // "D" toggles Visual Design.
@@ -128,7 +129,7 @@ function Shell() {
             {mode === 'database' && <DatabaseView />}
 
             <div className="canvas-area" style={{ display: showCanvas ? undefined : 'none' }}>
-              {mode === 'design' && <DesignStrip onDone={() => requestMode('preview')} editCount={sessionEdits} />}
+              {mode === 'design' && <DesignStrip onDone={() => requestMode('preview')} pending={pending} />}
               <div className="canvas-row">
                 <div className={`canvas ${mode === 'design' ? 'is-design' : ''} device-${device}`}>
                   <div className="canvas__scroll" ref={viewportRef}>
@@ -153,7 +154,7 @@ function Shell() {
           </div>
         </main>
       </div>
-      {transform && <TransformModal changes={transform} onDone={finishTransform} />}
+      {applying && <TransformModal changes={applying.changes} onDone={finishApply} />}
     </div>
   );
 }

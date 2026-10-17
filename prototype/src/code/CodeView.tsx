@@ -119,7 +119,7 @@ export function CodeView({ sync }: { sync: SyncInfo | null }) {
           <div className="code__banner">
             <Sparkles size={14} />
             <span>
-              Synced <b>{sync.ids.length}</b> visual {sync.ids.length === 1 ? 'edit' : 'edits'} into{' '}
+              AI applied <b>{sync.ids.length}</b> design {sync.ids.length === 1 ? 'change' : 'changes'} to{' '}
               {changedFiles.map((f, i) => (
                 <button key={f.path} onClick={() => open(f.path)}>
                   {f.path.split('/').pop()}

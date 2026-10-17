@@ -366,7 +366,7 @@ function EmptyInspector() {
           <MousePointer2 size={20} />
         </span>
         <strong>Select anything on the page</strong>
-        <p>Click to select, double-click to edit text. Every change is live and saved automatically.</p>
+        <p>Click to select, double-click to edit text. Changes stay a draft until you leave Visual Design, then AI applies them to code.</p>
       </div>
       <Section title="Palette">
         <div className="insp__palette">

@@ -140,7 +140,7 @@ export function useAiRunner() {
         badge: 'Visual Design · AI edit',
         text: `Updated the “${name}” button from your prompt “${prompt.trim() || 'make it rounded & secondary'}”:\n${steps
           .map((s) => `• ${s.label}`)
-          .join('\n')}\nChanges are live and saved — they'll be written to code next time you open Code.`,
+          .join('\n')}\nIt’s in your Visual Design draft. AI applies it to code when you leave Visual Design.`,
       });
     },
     [api, chat, getEl, setAi, setAnimating, select],

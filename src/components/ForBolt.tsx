@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react';
 import { forBolt, site, work } from '../content';
 import { prd } from '../prd';
 import { Contact } from './Contact';
+import { TokensTable } from './Prd';
 import { SectionHead } from './ui';
 import { VisualEditIllustration } from './Work';
 
@@ -188,12 +189,75 @@ function Proposal() {
   );
 }
 
+function Priority() {
+  const p = forBolt.priority;
+  return (
+    <section id="bolt-priority" className="section section--ink" aria-labelledby="bolt-priority-title">
+      <div className="wrap">
+        <SectionHead num="03" label={p.label} titleId="bolt-priority-title" title={p.heading} />
+        <p className="section-intro">{p.intro}</p>
+
+        <div className="options">
+          {p.options.map((o) => (
+            <div key={o.title} className="option" style={{ '--accent': `var(--${o.accent})` } as CSSProperties}>
+              <div className={`option__head surface-${o.accent}`}>
+                <p className="option__tag mono">{o.tag}</p>
+                <h3 className="option__title">{o.title}</h3>
+              </div>
+              <dl className="option__body option__points">
+                {o.points.map((pt) => (
+                  <div key={pt.label}>
+                    <dt className="mono">{pt.label}</dt>
+                    <dd>{pt.text}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          ))}
+        </div>
+
+        <h3 className="mono-label phases__label">{p.phasesLabel}</h3>
+        <ol className="phases">
+          {p.phases.map((ph) => (
+            <li key={ph.when} className="lane">
+              <div className={`lane__head surface-${ph.accent}`}>
+                <span className="lane__when">{ph.when}</span>
+                <span className="lane__tag mono">{ph.tag}</span>
+              </div>
+              <ol className="lane__steps">
+                {ph.steps.map((s) => (
+                  <li key={s}>{s}</li>
+                ))}
+              </ol>
+            </li>
+          ))}
+        </ol>
+        <p className="phases__note mono">{p.phasesNote}</p>
+
+        <h3 className="mono-label phases__label">{p.tokensLabel}</h3>
+        <TokensTable />
+        <p className="phases__note mono">{p.tokensNote}</p>
+
+        <div className="change-mind">
+          <p className="mono-label">{p.changeMind.label}</p>
+          <p>{p.changeMind.text}</p>
+        </div>
+
+        <a className="prd-link mono" href="#prd-priority">
+          {p.prdLink}
+          <ArrowRight size={16} strokeWidth={2.75} aria-hidden="true" />
+        </a>
+      </div>
+    </section>
+  );
+}
+
 function Prototype() {
   const p = forBolt.prototype;
   return (
     <section id="bolt-prototype" className="section section--paper" aria-labelledby="bolt-proto-title">
       <div className="wrap">
-        <SectionHead num="03" label={p.label} titleId="bolt-proto-title" title={p.title} />
+        <SectionHead num="04" label={p.label} titleId="bolt-proto-title" title={p.title} />
         <div className="featured bolt-proto">
           <div className="featured__grid">
             <div className="featured__copy">
@@ -254,7 +318,7 @@ function Start() {
   return (
     <section className="section section--paper grid-paper" aria-labelledby="bolt-start-title">
       <div className="wrap">
-        <SectionHead num="04" label="First 90 days" titleId="bolt-start-title" title={s.heading} />
+        <SectionHead num="05" label="First 90 days" titleId="bolt-start-title" title={s.heading} />
         <p className="section-intro">{s.note}</p>
         <ol className="plan">
           {s.steps.map((step, i) => (
@@ -310,9 +374,10 @@ export function ForBolt() {
       </section>
       <Problem />
       <Proposal />
+      <Priority />
       <Prototype />
       <Start />
-      <Contact num="05" />
+      <Contact num="06" />
     </>
   );
 }

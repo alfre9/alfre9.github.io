@@ -11,6 +11,8 @@
  * are omitted from the page entirely (no dead "#" links).
  */
 
+import { prd, requirementsIn } from './prd';
+
 export type Accent = 'sky' | 'lime' | 'coral' | 'blue' | 'paper' | 'purple' | 'turquoise' | 'yellow' | 'orange';
 
 /* ------------------------------------------------------------------ */
@@ -58,26 +60,11 @@ export const hero = {
   // Alfred's own intro (2026-10-15), kept word for word
   lead: 'Staff Product Manager driving AI-powered product growth and platform modernization for Creation, Photos.',
   /**
-   * Alfred's top three, shown as stat tiles. `detail` shows on hover, keyboard focus, or tap.
-   * Figures and details from Alfred (2026-10-15), lightly copy-edited. [self-reported]
+   * Alfred's top three, shown as stat tiles. `detail` shows on hover, keyboard focus, or tap;
+   * dollar amounts in it are highlighted automatically.
+   * Figures and details from Alfred (2026-10-15, reordered and regrouped 2026-10-16), lightly copy-edited. [self-reported]
    */
   wins: [
-    {
-      value: '$20M',
-      unit: 'ARR',
-      label: 'AI commerce',
-      icon: 'chat',
-      accent: 'lime',
-      detail: 'Conversational AI that helps customers find products, get answers, and manage their orders.',
-    },
-    {
-      value: '$40M',
-      unit: 'ARR',
-      label: 'AI photo augmentation',
-      icon: 'wand',
-      accent: 'sky',
-      detail: 'Integrated Google Gemini tools for photo expansion, filters, and magic eraser.',
-    },
     {
       value: '$146M',
       unit: 'ARR',
@@ -86,7 +73,25 @@ export const hero = {
       accent: 'coral',
       detail: 'Rebuilt a 20-year-old platform that drives $2B in revenue. A/B testing at launch showed a 13.9% revenue lift.',
     },
-  ] as { value: string; unit: string; label: string; icon: 'chat' | 'wand' | 'blocks'; accent: Accent; detail: string }[],
+    {
+      value: '$60M',
+      unit: 'ARR',
+      label: 'AI commerce & photo augmentation',
+      icon: 'wand',
+      accent: 'lime',
+      detail:
+        'Conversational AI that helps customers find products, get answers, and manage orders ($20M), plus Google Gemini photo expansion, filters, and magic eraser ($40M).',
+    },
+    {
+      value: '100K',
+      unit: 'UNITS',
+      label: 'Acquired via product\u2011led growth',
+      icon: 'api',
+      accent: 'sky',
+      detail:
+        '100K units added across 6 months through API-as-a-service products. One week of development let existing customers easily add their properties from Apartments.com. $1.5M in contracts revenue and a $17M ARR lift',
+    },
+  ] as { value: string; unit: string; label: string; icon: 'wand' | 'blocks' | 'api'; accent: Accent; detail: string }[],
   /** Cropped from "profile picture.jpeg" (head and shoulders), served from /public. */
   photo: {
     src: '/alfred-chang.jpg',
@@ -497,7 +502,7 @@ export const work = {
     simulated: [
       'The AI box in the toolbar: prompts are matched to a few keywords, and no model is called',
       'The chat history and version entries',
-      'The “visual edits → code” view, which generates illustrative code and doesn’t write to real source files',
+      'The AI pass that applies your design when you leave Visual Design, and the code view: both are illustrative and don’t write to real source files',
     ],
     disclosure: 'Independent concept. Not affiliated with Bolt. Some prototype behaviors are simulated.',
     /** Optional screenshot in /public, e.g. '/prototype-visual-design.png'. `null` uses the built-in illustration. */
@@ -624,7 +629,7 @@ export const forBolt = {
         accent: 'lime',
       },
       {
-        ask: 'Is it worth it?',
+        ask: 'Is it worth?',
         title: 'High effort for small changes',
         text: 'Changing one button means selecting, editing, adding changes, saving, and going back to chat.',
         note: { label: 'Hypothesis', text: 'That friction discourages iteration once the first generation is done.' },
@@ -651,26 +656,27 @@ export const forBolt = {
 
   proposal: {
     label: 'The proposal',
-    heading: 'Direct edits. Saved to code. Zero tokens.',
+    // [draft] 2026-10-16: reframed as agent-first, and "zero tokens" scoped to simple edits
+    heading: 'Agent-first. Simple edits, zero tokens.',
     intro:
-      'A first-class Visual Design mode next to Preview and Code. Supported edits apply instantly, save straight to source, and use no AI tokens. AI handles changes that are ambiguous, structural, or need reasoning, and only when the user asks.',
+      'Bolt stays agent-first: the agent builds the app and makes structural changes. Visual Design, next to Preview and Code, handles the last mile, not page building: color, spacing, type, and text. Those simple edits save straight to code with no AI, so they cost no tokens. Anything bigger goes to the agent when the user asks.',
     start: 'Select an element',
     decision: 'Can Bolt map and patch it safely?',
     paths: [
       {
-        when: 'Yes · supported edit',
+        when: 'Yes · simple edit',
         tag: '0 tokens',
         accent: 'lime',
-        steps: ['Edit in place or in the inspector', 'Deterministic patch to source', 'Validated, then marked Saved', 'One gesture, one undo'],
+        steps: ['Edit in place or in the inspector', 'Deterministic patch to source, no AI', 'Validated, then marked Saved', 'One gesture, one undo'],
       },
       {
-        when: 'No · needs AI',
+        when: 'No · goes to the agent',
         tag: 'Uses tokens, by choice',
         accent: 'sky',
         steps: ['Ask AI with the element attached', 'Review the scope and a diff', 'Keep or revert'],
       },
     ] as { when: string; tag: string; accent: Accent; steps: string[] }[],
-    pathsNote: 'Never silent: an unsupported edit asks before it calls AI.',
+    pathsNote: 'Never silent: bigger changes ask before calling AI. Zero tokens is the end state; slide 03 shows the path.',
     principlesLabel: 'Principles',
     principles: [
       { title: 'Speed', text: 'Simple changes shouldn’t wait on an agent.' },
@@ -696,38 +702,100 @@ export const forBolt = {
       'Edits survive reload and export',
       'Undo restores code and preview together',
     ],
-    prdLink: 'Requirements, technical approach, risks, and open questions are in the full PRD',
+    prdLink: 'Requirements, technical approach, prioritization, risks, and open questions are in the full PRD',
+  },
+
+  /*
+   * [draft] Slide 03, condensed from the PRD's Prioritization section (src/prd.ts). The call is
+   * Alfred's (2026-10-16): invest in the re-architecture, and ship a strict Design mode first.
+   */
+  priority: {
+    label: 'Prioritization',
+    heading: 'Hard to build? I think it is worth solving.',
+    intro:
+      'Engineering’s feedback: saving visual edits straight to code, without AI, means re-architecting how the preview connects to source. That’s a big bet, so it comes down to two options.',
+    options: [
+      {
+        tag: 'Option 1 · My pick',
+        title: 'Invest in the\nre-architecture',
+        accent: 'lime',
+        points: [
+          { label: 'Why', text: 'Trust is core. If saves are unclear, people stop relying on visual editing.' },
+          { label: 'Beyond tokens', text: 'A foundation for precise AI edits, clear scope, and truthful Code and Publish.' },
+          { label: 'Cost', text: 'Big engineering bet. Token-free edits arrive in phase 2.' },
+        ],
+      },
+      {
+        tag: 'Option 2',
+        title: 'Make Preview only a preview',
+        accent: 'coral',
+        points: [
+          { label: 'How', text: 'No editing on top of the preview. Changes go through chat.' },
+          { label: 'Gains', text: 'Cheap, quick, and no more “looks saved but isn’t.”' },
+          { label: 'Gives up', text: 'Direct editing. Every small change still waits on AI and spends tokens.' },
+        ],
+      },
+    ] as { tag: string; title: string; accent: Accent; points: { label: string; text: string }[] }[],
+    phasesLabel: 'How I’d ship option 1',
+    phases: [
+      {
+        when: 'Phase 1 · Clear Design mode',
+        tag: 'Tokens: one AI pass',
+        accent: 'sky',
+        steps: [
+          'In Design mode, every edit is a draft, marked “not in code yet”',
+          'Leave it, and AI applies every change in one pass. It takes time, and that’s okay',
+          '“Saved” only once it’s really in the code',
+        ],
+      },
+      {
+        when: 'Phase 2 · Direct saves',
+        tag: '0 tokens, simple edits',
+        accent: 'lime',
+        steps: ['Supported edits save to code when you let go, with no AI', 'Leaving Design mode is instant', 'AI only for structural changes'],
+      },
+    ] as { when: string; tag: string; accent: Accent; steps: string[] }[],
+    phasesNote: `Phase 1 runs on today’s AI save path and covers ${requirementsIn(1).length} of the PRD’s ${prd.requirements.length} requirements. The re-architecture unlocks the rest, starting with token-free saves.`,
+    /** The table rows come from prd.priority.tokens, so the slide and the PRD can't disagree. */
+    tokensLabel: prd.priority.tokensLabel,
+    tokensNote: '0 tokens means no AI model runs. It applies only to simple, supported edits, and only once phase 2 lands.',
+    changeMind: {
+      label: 'What would change my mind',
+      text: 'If the technical spike shows few everyday edits can be patched safely, phase 2 won’t pay back. Then option 2 is the honest call.',
+    },
+    prdLink: 'Read the prioritization in the PRD',
   },
 
   prototype: {
     label: 'Building on Bolt',
     title: 'I prototyped a Visual Design mode for Bolt.',
-    text: 'To test the proposal, I built a clickable version of the Bolt workspace with Visual Design next to Preview and Code. Select any element, edit it in place or in the inspector, and see how the edits map back to code.',
+    text: 'To test the proposal, I built a clickable version of the Bolt workspace with Visual Design next to Preview and Code. It shows phase 1: edits stay a draft while you design, and AI applies them to code in one pass when you leave.',
     tryLabel: 'Try it in two minutes',
     tryIt: [
       'Click Visual Design, left of Preview, or press D.',
-      'Select the “See my work” button. The breadcrumbs show where it sits.',
+      'Select the “Explore my journey” button. The breadcrumbs show where it sits.',
       'Change its fill or corners from the toolbar, then undo with ⌘Z.',
-      'Ask the toolbar’s AI box to “make it a pill.”',
-      'Switch to mobile, then open Code to see the edits as JSX.',
+      'Ask the toolbar’s AI box to “make it a pill.” The strip counts it as not in code yet.',
+      'Click Apply. AI writes every change to code in one pass. Then open Code to see the JSX.',
     ],
     coversLabel: 'From the PRD, in the prototype',
     covers: [
       { id: 'R1', text: 'Visual Design entry next to Preview and Code' },
       { id: 'R2', text: 'Hover and select add overlays only' },
-      { id: 'R3', text: 'Switch between editing and using the app' },
       { id: 'R4', text: 'Breadcrumbs and layers to reach a parent' },
       { id: 'R5', text: 'Inspector for layout, fill, stroke, and shadow' },
       { id: 'R6', text: 'Static text edited in place' },
+      { id: 'R9', text: '“Saved” only after changes are applied (simulated)' },
       { id: 'R11', text: 'Undo and redo' },
       { id: 'R14', text: 'AI anchored to the selected element (simulated)' },
+      { id: 'R18', text: 'Code shows applied changes and never syncs on open' },
     ],
-    // What the prototype fakes, checked against prototype/src (2026-10-15)
+    // What the prototype fakes, checked against prototype/src (2026-10-16)
     simulatedLabel: 'Not proven yet',
     simulated: [
-      'Edits save to your browser, not to source files. Persisting to source without tokens (R8–R10) needs a real patch engine.',
-      'The AI box matches prompts to a few keywords. No model is called.',
-      'The Code view generates illustrative JSX and plays a “visual edits → code” step.',
+      'Nothing reaches real source files. Drafts and applied changes both live in your browser.',
+      'The AI pass when you leave Visual Design is an animation, and the AI box matches prompts to a few keywords. No model is called.',
+      'The Code view generates illustrative JSX.',
       'The chat history and version entries are seeded.',
     ],
     cta: 'Open the prototype',

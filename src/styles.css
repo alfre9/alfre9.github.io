@@ -597,6 +597,14 @@ h4 {
   line-height: 1.5;
   animation: hero-win-pop 0.14s ease-out;
 }
+.hero__win-money {
+  padding: 0 0.2em;
+  background: var(--lime);
+  color: inherit;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+}
 /* keeps the hover alive while the pointer crosses the gap to the card */
 .hero__win-detail::before {
   content: '';
@@ -2680,6 +2688,156 @@ a.bolt-builds__name:hover {
   border-color: var(--blue-ink);
 }
 
+/* prioritization (#bolt-priority, and the PRD's #prd-priority) */
+
+.options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(20px, 3vw, 32px);
+  align-items: stretch;
+}
+.option {
+  background: var(--paper);
+  color: var(--ink);
+  border: var(--border);
+  box-shadow: var(--shadow);
+}
+.section--ink .option {
+  border-color: var(--paper);
+  box-shadow: 8px 8px 0 var(--accent, var(--lime));
+}
+.option__head {
+  padding: 14px 18px 16px;
+  border-bottom: var(--border);
+}
+.option .option__tag {
+  display: inline-block;
+  margin: 0;
+  padding: 2px 8px;
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.option__title {
+  margin-top: 10px;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: pre-line; /* lets a "\n" in the title in content.ts start a new line */
+}
+.option__body {
+  margin: 0;
+  padding: 16px 18px 18px;
+}
+.option .option__text {
+  margin: 0 0 14px;
+  line-height: 1.55;
+}
+.option__points {
+  display: grid;
+  gap: 12px;
+}
+.option__points div {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  gap: 12px;
+}
+.option__points dt {
+  font-weight: 700;
+  font-size: 11.5px;
+  line-height: 1.7;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.option__points dd {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.phases__label {
+  margin: clamp(40px, 5vw, 56px) 0 14px;
+}
+.section--ink .phases__label {
+  color: var(--lime);
+}
+.phases {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(20px, 3vw, 32px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.section--ink .lane {
+  color: var(--ink);
+  border-color: var(--paper);
+}
+.lane__meta {
+  display: grid;
+  gap: 6px;
+  margin: auto 0 0;
+  padding: 12px 16px 14px;
+  background: var(--sky-soft);
+  border-top: var(--border);
+}
+.lane__meta div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+}
+.lane__meta dt {
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.lane__meta dd {
+  margin: 0;
+  font-weight: 500;
+}
+.phases__note {
+  margin: 18px 0 0;
+  font-weight: 700;
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+}
+.section--ink .phases__note {
+  color: #d4d4d4;
+}
+.change-mind {
+  max-width: 44em;
+  margin-top: clamp(28px, 4vw, 40px);
+  padding: 16px 18px;
+  border: 2px dashed rgba(255, 255, 255, 0.55);
+}
+.change-mind .mono-label {
+  color: var(--lime);
+}
+.change-mind p:last-child {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+.section--ink .prd-table {
+  color: var(--ink);
+}
+.tokens .prd-table strong {
+  padding: 0 4px;
+  background: var(--lime);
+}
+.section--ink .prd-link {
+  border-color: var(--lime);
+}
+.section--ink .prd-link:hover {
+  border-color: var(--paper);
+}
+
 /* building on Bolt (#bolt-prototype) */
 
 .bolt-proto .featured__grid {
@@ -3102,6 +3260,27 @@ a.bolt-builds__name:hover {
 .prd-priority--p2 {
   background: var(--paper);
 }
+.prd-phase--1 {
+  background: var(--sky);
+}
+.prd-phase--2 {
+  background: var(--lime);
+}
+.prd-doc .options {
+  margin: 24px 0 8px;
+}
+.prd-doc .option__points div {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+}
+.prd-doc .phases {
+  margin-bottom: 20px;
+}
+.prd-doc .prd-aside--mind {
+  background: var(--paper);
+  border: 2px dashed var(--ink);
+  border-left: 6px solid var(--coral);
+}
 
 .prd-audience {
   display: grid;
@@ -3348,6 +3527,7 @@ a.bolt-builds__name:hover {
   .problems,
   .also__list,
   .proposal__grid,
+  .options,
   .prd-layout {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -3385,6 +3565,7 @@ a.bolt-builds__name:hover {
 
 @media (max-width: 700px) {
   .paths__lanes,
+  .phases,
   .prd-principles,
   .prd-audience,
   .prd-scope,
@@ -3394,7 +3575,8 @@ a.bolt-builds__name:hover {
   .paths__lanes::before {
     display: none;
   }
-  .prd-note {
+  .prd-note,
+  .option__points div {
     grid-template-columns: minmax(0, 1fr);
     gap: 2px;
   }

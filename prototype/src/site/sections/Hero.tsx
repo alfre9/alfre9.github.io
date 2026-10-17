@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUpRight, Blocks, BotMessageSquare, ChevronDown, WandSparkles } from 'lucide-react';
+import { ArrowDown, ArrowUpRight, Blocks, ChevronDown, Plug, WandSparkles } from 'lucide-react';
 import { Fragment, useRef, useState } from 'react';
 import photo from '../../../../public/alfred-chang.jpg';
 import { hero } from '../../../../src/content';
@@ -6,7 +6,7 @@ import { E } from '../../editor/E';
 import { useEditState } from '../../editor/store';
 import { useDesignSelection, within } from '../ui';
 
-const WIN_ICONS = { chat: BotMessageSquare, wand: WandSparkles, blocks: Blocks };
+const WIN_ICONS = { wand: WandSparkles, blocks: Blocks, api: Plug };
 
 /** Stat tiles. In Preview the detail opens on hover or tap; in Visual Design it opens while the tile is selected. */
 function Wins() {

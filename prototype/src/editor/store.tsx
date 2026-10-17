@@ -26,7 +26,8 @@ export interface Override {
 }
 export type Doc = Record<string, Override>;
 
-const STORAGE_KEY = 'bolt-visual-design:v2';
+// v3: `doc` is the Visual Design draft, `compiled` what AI has applied to code.
+const STORAGE_KEY = 'bolt-visual-design:v3';
 const COALESCE_MS = 1200;
 
 interface Persisted {
@@ -119,8 +120,6 @@ interface DocCtxValue {
   compiled: Doc;
   canUndo: boolean;
   canRedo: boolean;
-  saving: boolean;
-  savedAt: number;
 }
 
 const DocCtx = createContext<DocCtxValue | null>(null);
@@ -130,8 +129,6 @@ export function DocProvider({ children }: { children: ReactNode }) {
   const initial = useMemo(load, []);
   const [hist, dispatch] = useReducer(reducer, { doc: initial.doc, past: [], future: [] });
   const [compiled, setCompiled] = useState<Doc>(initial.compiled);
-  const [saving, setSaving] = useState(false);
-  const [savedAt, setSavedAt] = useState(() => Date.now());
   const last = useRef<{ key?: string; t: number }>({ t: 0 });
   const docRef = useRef(hist.doc);
   docRef.current = hist.doc;
@@ -168,22 +165,20 @@ export function DocProvider({ children }: { children: ReactNode }) {
     [update],
   );
 
-  // Live sync: every change is persisted automatically (debounced).
+  // The draft and applied state both survive a reload (debounced). This is the prototype's
+  // stand-in for source files, not the "Saved" state users see.
   const first = useRef(true);
   useEffect(() => {
     if (first.current) {
       first.current = false;
       return;
     }
-    setSaving(true);
     const t = setTimeout(() => {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify({ doc: hist.doc, compiled }));
       } catch {
         /* ignore */
       }
-      setSaving(false);
-      setSavedAt(Date.now());
     }, 450);
     return () => clearTimeout(t);
   }, [hist.doc, compiled]);
@@ -194,10 +189,8 @@ export function DocProvider({ children }: { children: ReactNode }) {
       compiled,
       canUndo: hist.past.length > 0,
       canRedo: hist.future.length > 0,
-      saving,
-      savedAt,
     }),
-    [hist, compiled, saving, savedAt],
+    [hist, compiled],
   );
 
   return (

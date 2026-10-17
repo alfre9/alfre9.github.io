@@ -1,14 +1,16 @@
-import { Check, ChevronRight, Cloud, Loader2, Monitor, Redo2, Smartphone, Tablet, Undo2 } from 'lucide-react';
+import { ChevronRight, CircleDashed, Monitor, Redo2, Smartphone, Sparkles, Tablet, Undo2 } from 'lucide-react';
 import { Fragment } from 'react';
 import { Segmented } from './controls';
 import { ancestorsOf, friendlyName } from './dom';
 import { useDoc, useDocApi, useEditor, type Device } from './store';
 
-export function DesignStrip({ onDone, editCount }: { onDone: () => void; editCount: number }) {
+/** `pending` counts draft changes that aren't in code yet; leaving Visual Design applies them. */
+export function DesignStrip({ onDone, pending }: { onDone: () => void; pending: number }) {
   const { selectedId, getEl, select, setHover, device, setDevice } = useEditor();
-  const { canUndo, canRedo, saving } = useDoc();
+  const { canUndo, canRedo } = useDoc();
   const api = useDocApi();
   const chain = ancestorsOf(getEl(selectedId));
+  const changes = `${pending} ${pending === 1 ? 'change' : 'changes'}`;
 
   return (
     <div className="strip">
@@ -52,18 +54,18 @@ export function DesignStrip({ onDone, editCount }: { onDone: () => void; editCou
           ]}
         />
         <span className="strip__div" />
-        <span className={`sync ${saving ? 'is-saving' : ''}`} data-tip="Live sync: every change is saved automatically">
-          {saving ? <Loader2 size={13} className="spin" /> : <Cloud size={14} />}
-          {saving ? 'Saving…' : editCount ? (
-            <>
-              Saved <Check size={12} strokeWidth={3} />
-            </>
-          ) : (
-            'Live'
-          )}
+        <span className={`draft ${pending ? 'has-changes' : ''}`} data-tip="AI applies your changes to code when you leave">
+          <CircleDashed size={14} />
+          {pending ? `${changes} · not in code yet` : 'No changes yet'}
         </span>
         <button className="btn btn--blue btn--sm" onClick={onDone}>
-          Done
+          {pending ? (
+            <>
+              <Sparkles size={13} /> Apply {changes}
+            </>
+          ) : (
+            'Done'
+          )}
         </button>
       </div>
     </div>

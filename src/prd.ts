@@ -6,12 +6,15 @@
  * ("code work.bolt", "chat.bolt", "limitations.reactnative+1"), the speed line's
  * grammar fixed, and "The user discovered…" reworded as firsthand testing.
  * Product principles removed (2026-10-15); the speed line now opens the problem statement.
+ * Prioritization section and the requirements' phase column added 2026-10-16 (CONTENT_NOTES.md §1d).
  * Everything else is his wording. See CONTENT_NOTES.md §1c.
  *
  * Inline `code` and **bold** in strings are rendered by <Rich> in Prd.tsx.
  */
 
 export type Priority = 'P0' | 'P1' | 'P2';
+/** 1 = strict Design mode, AI applies on exit. 2 = direct saves, after the re-architecture. */
+export type Phase = 1 | 2;
 
 export const prd = {
   /** URL hash that opens the PRD. Its section ids all start with `prd-`, which keeps this view. */
@@ -32,6 +35,8 @@ export const prd = {
     'Make visual refinement a first-class Bolt workflow so users can confidently continue editing an application after its initial generation.',
     'Users should be able to make supported visual changes directly, see immediate feedback, and have those changes persisted to source code without a separate chat confirmation or AI-token charge.',
     'Use AI deliberately for ambiguous, structural, or reasoning-heavy changes, not as the default persistence mechanism for every visual adjustment.',
+    // [draft] added 2026-10-16 to answer "is this still agent-first?"
+    'Bolt stays agent-first. The agent still builds the app and makes structural changes; Visual Design is a refinement layer for a small set of visual properties, not a general web builder.',
   ],
 
   problem: {
@@ -166,28 +171,33 @@ export const prd = {
     ],
   },
 
+  /*
+   * `phase` is my split (2026-10-16), not Alfred's: phase 1 is everything that can ship on
+   * today's AI save path with a strict Design mode; phase 2 needs the re-architecture.
+   */
+  requirementsNote: 'Phase 1 ships with a strict Design mode on today’s AI save path. Phase 2 needs the re-architecture. See Prioritization.',
   requirements: [
-    { id: 'R1', title: 'First-class Visual Design entry', priority: 'P0', criteria: 'Visible near Preview/Code; current mode is clear; chat Select remains an alternate entry' },
-    { id: 'R2', title: 'True visual selection, no mutate on selects', priority: 'P0', criteria: 'Hover/click adds editor overlays only; no source mutation, layout shift, or navigation' },
-    { id: 'R3', title: 'Edit/interact toggle', priority: 'P0', criteria: 'User can test buttons and navigation without exiting the entire workflow' },
-    { id: 'R4', title: 'Selection hierarchy', priority: 'P0', criteria: 'User can distinguish a button from its label and move to a parent' },
-    { id: 'R5', title: 'Supported-property inspector', priority: 'P0', criteria: 'Available properties are explicit; unsupported properties are disabled with explanation' },
-    { id: 'R6', title: 'Static text editing', priority: 'P0', criteria: 'Static literals persist; dynamic, localized, or bound values are identified rather than overwritten' },
-    { id: 'R7', title: 'Live preview', priority: 'P0', criteria: 'Manipulation produces immediate-feeling feedback without source writes on every pointer movement' },
-    { id: 'R8', title: 'Automatic source persistence', priority: 'P0', criteria: 'Supported edits commit after interaction completion; no Add changes or chat confirmation' },
-    { id: 'R9', title: 'Accurate save state', priority: 'P0', criteria: 'Saved appears only after source persistence and applicable validation; failure offers Retry/Revert' },
-    { id: 'R10', title: 'Token-free deterministic edits', priority: 'P0', criteria: 'Supported direct edits do not invoke an LLM or debit AI tokens' },
-    { id: 'R11', title: 'Transactional undo/redo', priority: 'P0', criteria: 'One completed gesture is one undo action; source and preview restore together' },
-    { id: 'R12', title: 'Responsive scope', priority: 'P0', criteria: 'Inspector shows base/current-breakpoint scope; no silent conversion to fixed desktop dimensions' },
-    { id: 'R13', title: 'Latest-state agent awareness', priority: 'P0', criteria: 'Later prompts use persisted source; concurrent mutations are serialized or blocked' },
-    { id: 'R14', title: 'Contextual AI action', priority: 'P1', criteria: 'Selected element and intended scope accompany the request; user sees that AI is involved' },
-    { id: 'R15', title: 'Explicit unsupported fallback', priority: 'P0', criteria: 'No silent inference; user chooses AI edit, Code, or cancellation' },
-    { id: 'R16', title: 'Repeated/shared-element scope', priority: 'P0', criteria: 'Repeated instances are detected; ambiguous instance-only changes are blocked or clarified' },
-    { id: 'R17', title: 'Change history', priority: 'P1', criteria: 'Completed edits create readable, recoverable history without requiring a synthetic user prompt' },
-    { id: 'R18', title: 'Code parity', priority: 'P0', criteria: 'Opening Code shows already-persisted changes; it does not initiate synchronization' },
-    { id: 'R19', title: 'Publication parity', priority: 'P0', criteria: 'Export/publish uses persisted source; unsettled mutations are surfaced before publication' },
-    { id: 'R20', title: 'Expanded layers panel', priority: 'P2', criteria: 'Hidden/shared/repeated elements have accurate labels and safe selection behavior' },
-  ] as { id: string; title: string; priority: Priority; criteria: string }[],
+    { id: 'R1', title: 'First-class Visual Design entry', priority: 'P0', phase: 1, criteria: 'Visible near Preview/Code; current mode is clear; chat Select remains an alternate entry' },
+    { id: 'R2', title: 'True visual selection, no mutate on selects', priority: 'P0', phase: 1, criteria: 'Hover/click adds editor overlays only; no source mutation, layout shift, or navigation' },
+    { id: 'R3', title: 'Edit/interact toggle', priority: 'P0', phase: 2, criteria: 'User can test buttons and navigation without exiting the entire workflow' },
+    { id: 'R4', title: 'Selection hierarchy', priority: 'P0', phase: 1, criteria: 'User can distinguish a button from its label and move to a parent' },
+    { id: 'R5', title: 'Supported-property inspector', priority: 'P0', phase: 1, criteria: 'Available properties are explicit; unsupported properties are disabled with explanation' },
+    { id: 'R6', title: 'Static text editing', priority: 'P0', phase: 1, criteria: 'Static literals persist; dynamic, localized, or bound values are identified rather than overwritten' },
+    { id: 'R7', title: 'Live preview', priority: 'P0', phase: 1, criteria: 'Manipulation produces immediate-feeling feedback without source writes on every pointer movement' },
+    { id: 'R8', title: 'Automatic source persistence', priority: 'P0', phase: 2, criteria: 'Supported edits commit after interaction completion; no Add changes or chat confirmation' },
+    { id: 'R9', title: 'Accurate save state', priority: 'P0', phase: 1, criteria: 'Saved appears only after source persistence and applicable validation; failure offers Retry/Revert' },
+    { id: 'R10', title: 'Token-free deterministic edits', priority: 'P0', phase: 2, criteria: 'Supported direct edits do not invoke an LLM or debit AI tokens' },
+    { id: 'R11', title: 'Transactional undo/redo', priority: 'P0', phase: 1, criteria: 'One completed gesture is one undo action; source and preview restore together' },
+    { id: 'R12', title: 'Responsive scope', priority: 'P0', phase: 1, criteria: 'Inspector shows base/current-breakpoint scope; no silent conversion to fixed desktop dimensions' },
+    { id: 'R13', title: 'Latest-state agent awareness', priority: 'P0', phase: 1, criteria: 'Later prompts use persisted source; concurrent mutations are serialized or blocked' },
+    { id: 'R14', title: 'Contextual AI action', priority: 'P1', phase: 1, criteria: 'Selected element and intended scope accompany the request; user sees that AI is involved' },
+    { id: 'R15', title: 'Explicit unsupported fallback', priority: 'P0', phase: 1, criteria: 'No silent inference; user chooses AI edit, Code, or cancellation' },
+    { id: 'R16', title: 'Repeated/shared-element scope', priority: 'P0', phase: 2, criteria: 'Repeated instances are detected; ambiguous instance-only changes are blocked or clarified' },
+    { id: 'R17', title: 'Change history', priority: 'P1', phase: 1, criteria: 'Completed edits create readable, recoverable history without requiring a synthetic user prompt' },
+    { id: 'R18', title: 'Code parity', priority: 'P0', phase: 1, criteria: 'Opening Code shows already-persisted changes; it does not initiate synchronization' },
+    { id: 'R19', title: 'Publication parity', priority: 'P0', phase: 1, criteria: 'Export/publish uses persisted source; unsettled mutations are surfaced before publication' },
+    { id: 'R20', title: 'Expanded layers panel', priority: 'P2', phase: 2, criteria: 'Hidden/shared/repeated elements have accurate labels and safe selection behavior' },
+  ] as { id: string; title: string; priority: Priority; phase: Phase; criteria: string }[],
 
   /*
    * [draft] Product view of the technology, condensed from Alfred's architecture brief (2026-10-15).
@@ -293,6 +303,90 @@ export const prd = {
     ],
   },
 
+  /*
+   * [draft] Alfred's prioritization call (2026-10-16): engineering says direct saves need a
+   * re-architecture. Option 1 (invest, recommended) vs. option 2 (Preview is only a preview),
+   * with option 1 shipped first as a strict Design mode whose edits AI applies in bulk on exit.
+   */
+  priority: {
+    intro: [
+      'Engineering’s feedback on this PRD: saving visual edits straight to source without AI (R8, R10) means re-architecting how the preview connects to code. It’s difficult, and it isn’t a UI change.',
+      'That makes it a prioritization call. Either the re-architecture is worth it, or we remove the confusion a cheaper way.',
+    ],
+    options: [
+      {
+        tag: 'Option 1 · Recommended',
+        title: 'Invest in the re-architecture',
+        recommended: true,
+        text: 'Commit to the platform change, and ship it in two phases so users get a clearer experience before the hard part lands.',
+        points: [
+          {
+            label: 'Why',
+            text: 'Trust is core to how people use Bolt. If builders can’t tell what’s saved, they stop relying on visual editing. Winning that trust back is open question 4.',
+          },
+          {
+            label: 'Beyond tokens',
+            text: 'Knowing where every element comes from is a foundation, not just a token fix. It also makes contextual AI precise (R14), scope clear (R16), and Code and Publish truthful (R18, R19).',
+          },
+          { label: 'Cost', text: 'A large engineering investment. Token-free edits arrive in phase 2, not at launch.' },
+        ],
+      },
+      {
+        tag: 'Option 2',
+        title: 'Make Preview only a preview',
+        recommended: false,
+        text: 'Remove editing on top of the preview. The preview is for looking; changes go through chat, with Select to point at an element.',
+        points: [
+          { label: 'Gains', text: 'Cheap and quick. Removes the “looks saved but isn’t” confusion (problem 1).' },
+          { label: 'Gives up', text: 'Direct editing. Every small change still waits on the agent and spends tokens, so problems 2 and 3 stay.' },
+        ],
+      },
+    ],
+    phasesLabel: 'How option 1 ships',
+    phases: [
+      {
+        phase: 1,
+        name: 'Phase 1 · Clear Design mode',
+        when: 'Ships first, on today’s AI save path',
+        tokens: 'One AI pass per Design session',
+        steps: [
+          'Enter Design mode: it’s strictly for designing. Every edit is a draft, marked “not in code yet.”',
+          'Leave Design mode: Bolt’s AI applies every change in one pass. It takes time, and that’s okay, because the user knows exactly what’s happening.',
+          '“Saved” appears only when the pass finishes and the build checks out. If it fails, Retry or Revert.',
+        ],
+      },
+      {
+        phase: 2,
+        name: 'Phase 2 · Direct saves',
+        when: 'When the re-architecture lands',
+        tokens: 'Zero for supported edits',
+        steps: [
+          'Supported edits save to source when the user lets go, with no AI.',
+          'Leaving Design mode is instant, so users can try the app mid-edit (R3).',
+          'AI handles only the structural changes the user asks for.',
+        ],
+      },
+    ] as { phase: Phase; name: string; when: string; tokens: string; steps: string[] }[],
+    /* [draft] 2026-10-16. Shared with slide 03 (forBolt.priority in content.ts). **bold** marks the zero-token cell. */
+    tokensLabel: 'Where tokens are spent',
+    tokens: [
+      { action: 'Prompt the agent to build or add a feature', today: 'Tokens', phase1: 'Tokens', phase2: 'Tokens' },
+      {
+        action: 'Simple edit: color, spacing, type, static text',
+        today: 'Tokens, when you click Save changes',
+        phase1: 'Tokens: one AI pass when you leave Design mode',
+        phase2: '**0 tokens.** Saved directly, no AI',
+      },
+      { action: 'Bigger change: layout, responsive, components', today: 'Tokens', phase1: 'Tokens, when you ask AI', phase2: 'Tokens, when you ask AI' },
+    ],
+    tokensNote:
+      '“0 tokens” means no AI model runs, so the user’s token balance isn’t touched (R10). The agent’s next prompt still reads the project, including those edits, at its normal cost. It holds only for supported edits, and only once the spike confirms Bolt can patch them safely (open question 2).',
+    phaseNote:
+      '**Why strict mode first:** the mode boundary becomes the save point. Users always know whether their changes are in code, and the agent never edits at the same time they do (R13). Phase 1 also shows which edits people actually make, which tells engineering where phase 2 should start.',
+    changeMind:
+      '**What would change this call:** if the technical spike shows that few everyday edits can be mapped and patched safely (open question 2), phase 2 won’t pay back. Then option 2 is the honest choice: stop editing on the preview and make chat-based changes better.',
+  },
+
   risks: [
     { risk: 'Incorrect source mapping', impact: 'Wrong component changes', mitigation: 'Revision-aware IDs and explicit fallback' },
     { risk: 'Shared-component ambiguity', impact: 'One edit changes many instances', mitigation: 'Scope labels and clarification' },
@@ -306,6 +400,9 @@ export const prd = {
     { risk: 'Low deterministic coverage', impact: 'New mode still frequently invokes AI', mitigation: 'Measure task coverage before scaling' },
     { risk: 'Reduced token revenue', impact: 'Commercial concern', mitigation: 'Evaluate retained value, conversion, and contribution margin' },
     { risk: 'Scope creep', impact: 'Large builder project delays value', mitigation: 'Start with a small supported property set' },
+    { risk: 'Phase 1: bulk apply goes wrong', impact: 'Many changes fail at once', mitigation: 'Per-change progress, build check, Retry/Revert' },
+    { risk: 'Phase 1: apply wait feels long', impact: 'Users avoid leaving Design mode', mitigation: 'Show what’s being applied; track apply time' },
+    { risk: 'Phase 2 slips', impact: 'Token-free edits never ship', mitigation: 'Staff the spike alongside phase 1' },
   ],
 
   dependencies: [
@@ -357,8 +454,24 @@ export const prdSections = [
   { id: 'prd-scope', label: 'Scope' },
   { id: 'prd-requirements', label: 'Requirements' },
   { id: 'prd-technical', label: 'Technical approach' },
+  { id: 'prd-priority', label: 'Prioritization' },
   { id: 'prd-risks', label: 'Risks' },
   { id: 'prd-dependencies', label: 'Dependencies' },
   { id: 'prd-questions', label: 'Open questions' },
   { id: 'prd-validation', label: 'Validation plan' },
 ] as const;
+
+export const requirementsIn = (phase: Phase) => prd.requirements.filter((r) => r.phase === phase);
+
+/** A phase's requirement IDs with runs collapsed, e.g. "R1–R2, R4–R7". */
+export function phaseIds(phase: Phase) {
+  const nums = requirementsIn(phase).map((r) => Number(r.id.slice(1)));
+  const runs: string[] = [];
+  for (let i = 0; i < nums.length; ) {
+    let j = i;
+    while (nums[j + 1] === nums[j] + 1) j++;
+    runs.push(j === i ? `R${nums[i]}` : `R${nums[i]}–R${nums[j]}`);
+    i = j + 1;
+  }
+  return runs.join(', ');
+}

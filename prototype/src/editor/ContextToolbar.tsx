@@ -305,7 +305,7 @@ function AiPanel({ run, onUndo, onClose }: { run: NonNullable<ReturnType<typeof 
         <span>
           {run.phase === 'thinking' && 'Reading the button styles…'}
           {run.phase === 'applying' && 'Applying edits live…'}
-          {run.phase === 'done' && 'Done · saved'}
+          {run.phase === 'done' && 'Done · not in code yet'}
         </span>
         {run.phase === 'done' && (
           <span className="ctb__ai-actions">

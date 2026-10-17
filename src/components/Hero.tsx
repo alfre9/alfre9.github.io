@@ -1,8 +1,25 @@
-import { ArrowDown, ArrowUpRight, Blocks, BotMessageSquare, ChevronDown, WandSparkles } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { ArrowDown, ArrowUpRight, Blocks, ChevronDown, Plug, WandSparkles } from 'lucide-react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { hero } from '../content';
 
-const WIN_ICONS = { chat: BotMessageSquare, wand: WandSparkles, blocks: Blocks };
+const WIN_ICONS = { wand: WandSparkles, blocks: Blocks, api: Plug };
+
+/** Highlights dollar amounts ("$14", "$1.5M", "$2B") inside a tile's detail. */
+function Money({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/(\$\d+(?:[.,]\d+)*[KMB]?)/).map((part, i) =>
+        i % 2 ? (
+          <mark key={i} className="hero__win-money">
+            {part}
+          </mark>
+        ) : (
+          <Fragment key={i}>{part}</Fragment>
+        ),
+      )}
+    </>
+  );
+}
 
 /**
  * Stat tiles whose detail opens on mouse hover, or toggles on tap / Enter.
@@ -64,7 +81,7 @@ function Wins() {
               <ChevronDown className="hero__win-chevron" size={18} strokeWidth={3} aria-hidden="true" />
             </button>
             <p id={`win-detail-${i}`} className="hero__win-detail" hidden={!isOpen}>
-              {w.detail}
+              <Money text={w.detail} />
             </p>
           </li>
         );

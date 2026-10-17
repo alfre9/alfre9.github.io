@@ -25,7 +25,7 @@ Everything the site says lives in **`src/content.ts`**: identity, links, hero, c
 
 A separate view for the Bolt.new team, linked only from the footer ("For the Bolt.new team"). It isn't part of the main scroll, and you can send the link directly: `https://<your-domain>/#bolt`. Copy lives in `forBolt` in `content.ts`.
 
-The page is built to walk through in an interview: the hero, then three "slides" (**01 The problem**, **02 The proposal**, **03 Building on Bolt**), then the first 90 days and contact. Each slide has its own deep link: `#bolt-problem`, `#bolt-proposal`, `#bolt-prototype`.
+The page is built to walk through in an interview: the hero, then four "slides" (**01 The problem**, **02 The proposal**, **03 Prioritization**, **04 Building on Bolt**), then the first 90 days and contact. Each slide has its own deep link: `#bolt-problem`, `#bolt-proposal`, `#bolt-priority`, `#bolt-prototype`.
 
 ## The PRD page (`/#bolt-prd`)
 
@@ -73,7 +73,7 @@ src/
     Reach.tsx           40M / 1B proportional figure
     Beyond.tsx          badminton / strategy board / pickleball SVGs
     Contact.tsx         contact + footer (footer links to #bolt)
-    ForBolt.tsx         Bolt.new page: stats, problem, proposal, prototype, first 90 days
+    ForBolt.tsx         Bolt.new page: stats, problem, proposal, prioritization, prototype, first 90 days
     Prd.tsx             PRD page: contents list, problem cards, tables that stack on phones
     ui.tsx              section heading helpers
 ```
